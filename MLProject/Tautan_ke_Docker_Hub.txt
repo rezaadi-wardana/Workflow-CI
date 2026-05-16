@@ -1,0 +1,20 @@
+Docker Hub Image:
+https://hub.docker.com/r/rezaadiwardana/loan-default-mlflow
+
+Setup Instructions:
+1. Create repository at: https://hub.docker.com/repository/create
+   - Name: loan-default-mlflow
+   - Visibility: Public
+   - Create
+
+2. Build and Push:
+   cd Workflow-CI/MLProject
+   docker build -t rezaadiwardana/loan-default-mlflow:latest .
+   docker push rezaadiwardana/loan-default-mlflow:latest
+
+3. Or build via MLflow (after training):
+   mlflow models build-docker -m "runs:/<RUN_ID>/best_random_forest_model" -n "rezaadiwardana/loan-default-mlflow:latest"
+   docker push rezaadiwardana/loan-default-mlflow:latest
+
+4. Run:
+   docker run rezaadiwardana/loan-default-mlflow:latest
