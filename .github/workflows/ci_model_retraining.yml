@@ -69,24 +69,21 @@ jobs:
             echo "No changes to commit"
           fi
 
-      - name: Build Docker image with MLflow
+      - name: Build Docker image with Dockerfile (fallback)
         run: |
           cd MLProject
-          mlflow models build-docker \
-            -m "runs:/${{ steps.train.outputs.RUN_ID }}/random_forest_model" \
-            -n "${{ secrets.DOCKER_USERNAME || 'rezaadiwardana' }}/loan-default-mlflow:latest" \
-            --env-manager local
+          docker build -t "loan-default-mlflow:latest" .
 
       - name: Push Docker image to Docker Hub
         env:
-          DOCKER_USERNAME: ${{ secrets.USERNAME }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
-          USERNAME="${DOCKER_USERNAME:-rezaadi-wardana}"
-          PASSWORD="${DOCKER_PASSWORD:-}"
-          if [ -n "$PASSWORD" ]; then
-            echo "$PASSWORD" | docker login -u "$USERNAME" --password-stdin
-            docker push "$USERNAME/loan-default-mlflow:latest"
-          else
-            echo "DOCKER_PASSWORD secret not set. Skipping push."
+          if [ -z "$DOCKER_USERNAME" ] || [ -z "$DOCKER_PASSWORD" ]; then
+            echo "DOCKER_USERNAME or DOCKER_PASSWORD not set. Skipping Docker push."
+            exit 0
           fi
+          echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+          docker tag loan-default-mlflow:latest "$DOCKER_USERNAME/loan-default-mlflow:latest"
+          docker push "$DOCKER_USERNAME/loan-default-mlflow:latest"
+          echo "Docker image pushed successfully!"
