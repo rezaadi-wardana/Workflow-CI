@@ -6,9 +6,5 @@ mlflow.db
 *.jpg
 *.png
 *.csv
-!Membangun_model/screenshoot_dashboard.jpg
-!Membangun_model/screenshoot_artifak.jpg
-!Membangun_model/confusion_matrix*.png
-!Membangun_model/feature_importance*.png
-!Membangun_model/*.csv
+!MLProject/loan_default_preprocessed.csv
 .DS_Store
